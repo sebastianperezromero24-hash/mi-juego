@@ -3,44 +3,59 @@
 <head>
 <meta charset="UTF-8">
 <title>RNG Poder PRO</title>
+
 <style>
-body{font-family:Arial;text-align:center;background:#0a0a0a;color:white;overflow:hidden}
-button{padding:15px 30px;font-size:18px;cursor:pointer;border-radius:10px;border:none;background:#444;color:white}
-#resultado{margin-top:40px;font-size:32px;transition:0.3s}
-#prob{font-size:14px;color:#aaa}
-<h2>📜 Lista de poderes</h2>
-<div id="lista" style="max-height:300px; overflow-y:auto; text-align:left; margin:20px auto; width:80%; border:1px solid #444; padding:10px;"></div>
-.anim{animation:pop 0.5s ease}
-@keyframes pop{0%{transform:scale(0.5);opacity:0}100%{transform:scale(1);opacity:1}}
-.flash{animation:flash 0.3s}
-@keyframes flash{0%{background:#fff}100%{background:#0a0a0a}}
+body{
+    font-family:Arial;
+    text-align:center;
+    background:#0a0a0a;
+    color:white;
+    overflow:hidden;
+}
+button{
+    padding:15px 30px;
+    font-size:18px;
+    cursor:pointer;
+    border-radius:10px;
+    border:none;
+    background:#444;
+    color:white;
+}
+#resultado{
+    margin-top:40px;
+    font-size:32px;
+    transition:0.3s;
+}
+#prob{
+    font-size:14px;
+    color:#aaa;
+}
+.anim{
+    animation:pop 0.5s ease;
+}
+@keyframes pop{
+    0%{transform:scale(0.5);opacity:0}
+    100%{transform:scale(1);opacity:1}
+}
+.flash{
+    animation:flash 0.3s;
+}
+@keyframes flash{
+    0%{background:#fff}
+    100%{background:#0a0a0a}
+}
 #lista{
-  max-height:300px;
-  overflow-y:auto;
-  text-align:left;
-  margin:20px auto;
-  width:80%;
-  border:1px solid #444;
-  padding:10px;
-  font-size:14px;
+    max-height:300px;
+    overflow-y:auto;
+    text-align:left;
+    margin:20px auto;
+    width:80%;
+    border:1px solid #444;
+    padding:10px;
+    font-size:14px;
 }
-function generarLista(){
-  let total = poderes.reduce((s,p)=>s+p.prob,0);
-  let lista = document.getElementById("lista");
-
-  lista.innerHTML = ""; // limpiar por si acaso
-
-  for(let p of poderes){
-    let div = document.createElement("div");
-    let chance = Math.floor(total / p.prob);
-    div.textContent = p.nombre + " → 1 en " + chance;
-    lista.appendChild(div);
-  }
-}
-
-// 👇 ESTO ES LO QUE TE FALTABA
-window.onload = generarLista;
 </style>
+
 </head>
 <body>
 
@@ -49,169 +64,179 @@ window.onload = generarLista;
 
 <div id="resultado"></div>
 <div id="prob"></div>
+
 <h2>📜 Lista de poderes</h2>
 <div id="lista"></div>
 
 <audio id="low" src="https://www.myinstants.com/media/sounds/click.mp3" preload="auto"></audio>
 
 <script>
-const poderes=[
-// Cada prob es única (sin repetir)
+
+// 🍀 SISTEMA DE SUERTE
+let luck = 1;
+let rolls = 0;
+
+// 🎲 PODERES
+const poderes = [
 {nombre:"💀 Pobre",prob:5000,rare:1},
-{nombre:"💧 Pobre de agua",prob:4990,rare:1},
-{nombre:"🔥 Pobre de fuego",prob:4980,rare:1},
-{nombre:"🩸 Pobre sangriento",prob:4970,rare:1},
-{nombre:"✨ Pobre de habilidad",prob:4960,rare:1},
-
-{nombre:"🛒 Vendedor",prob:4800,rare:1},
-{nombre:"💧 Vendedor de agua",prob:4790,rare:1},
-{nombre:"🔥 Vendedor de fuego",prob:4780,rare:1},
-{nombre:"🩸 Vendedor sangriento",prob:4770,rare:1},
-{nombre:"✨ Vendedor de habilidad",prob:4760,rare:1},
-
-{nombre:"🙂 Común",prob:4500,rare:2},
-{nombre:"💧 Común de agua",prob:4490,rare:2},
-{nombre:"🔥 Común de fuego",prob:4480,rare:2},
-{nombre:"🩸 Común sangriento",prob:4470,rare:2},
-{nombre:"✨ Común de habilidad",prob:4460,rare:2},
-
-{nombre:"🤖 NPC",prob:4200,rare:2},
-{nombre:"💧 NPC de agua",prob:4190,rare:2},
-{nombre:"🔥 NPC de fuego",prob:4180,rare:2},
-{nombre:"🩸 NPC sangriento",prob:4170,rare:2},
-{nombre:"✨ NPC de habilidad",prob:4160,rare:2},
-
-{nombre:"🔨 Trabajador",prob:3800,rare:3},
-{nombre:"💧 Trabajador de agua",prob:3790,rare:3},
-{nombre:"🔥 Trabajador de fuego",prob:3780,rare:3},
-{nombre:"🩸 Trabajador sangriento",prob:3770,rare:3},
-{nombre:"✨ Trabajador de habilidad",prob:3760,rare:3},
-
-{nombre:"💼 Exitoso",prob:3400,rare:3},
-{nombre:"💧 Exitoso de agua",prob:3390,rare:3},
-{nombre:"🔥 Exitoso de fuego",prob:3380,rare:3},
-{nombre:"🩸 Exitoso sangriento",prob:3370,rare:3},
-{nombre:"✨ Exitoso de habilidad",prob:3360,rare:3},
-
-{nombre:"🏢 Empresario",prob:3000,rare:4},
-{nombre:"💧 Empresario de agua",prob:2990,rare:4},
-{nombre:"🔥 Empresario de fuego",prob:2980,rare:4},
-{nombre:"🩸 Empresario sangriento",prob:2970,rare:4},
-{nombre:"✨ Empresario de habilidad",prob:2960,rare:4},
-
-{nombre:"👑 Jefe común",prob:2600,rare:4},
-{nombre:"💧 Jefe común de agua",prob:2590,rare:4},
-{nombre:"🔥 Jefe común de fuego",prob:2580,rare:4},
-{nombre:"🩸 Jefe común sangriento",prob:2570,rare:4},
-{nombre:"✨ Jefe común de habilidad",prob:2560,rare:4},
-
-{nombre:"👑 Jefe",prob:2200,rare:5},
-{nombre:"💧 Jefe de agua",prob:2190,rare:5},
-{nombre:"🔥 Jefe de fuego",prob:2180,rare:5},
-{nombre:"🩸 Jefe sangriento",prob:2170,rare:5},
-{nombre:"✨ Jefe de habilidad",prob:2160,rare:5},
-
-{nombre:"👑 Jefe superior",prob:1800,rare:5},
-{nombre:"💧 Jefe superior de agua",prob:1790,rare:5},
-{nombre:"🔥 Jefe superior de fuego",prob:1780,rare:5},
-{nombre:"🩸 Jefe superior sangriento",prob:1770,rare:5},
-{nombre:"✨ Jefe superior de habilidad",prob:1760,rare:5},
-
-{nombre:"👑 Rey bajo",prob:1400,rare:6},
-{nombre:"💧 Rey bajo de agua",prob:1390,rare:6},
-{nombre:"🔥 Rey bajo de fuego",prob:1380,rare:6},
-{nombre:"🩸 Rey bajo sangriento",prob:1370,rare:6},
-{nombre:"✨ Rey bajo de habilidad",prob:1360,rare:6},
-{nombre:"👑 Rey bajo I",prob:1350,rare:6},
-{nombre:"👑 Rey bajo II",prob:1340,rare:6},
-{nombre:"👑 Rey bajo III",prob:1330,rare:6},
-{nombre:"👑 Rey bajo IV",prob:1320,rare:6},
-{nombre:"👑 Rey bajo V",prob:1310,rare:6},
-
-{nombre:"👑 Rey",prob:1200,rare:6},
-{nombre:"💧 Rey de agua",prob:1190,rare:6},
-{nombre:"🔥 Rey de fuego",prob:1180,rare:6},
-{nombre:"🩸 Rey sangriento",prob:1170,rare:6},
-{nombre:"✨ Rey de habilidad",prob:1160,rare:6},
-{nombre:"👑 Rey I",prob:1150,rare:6},
-{nombre:"👑 Rey II",prob:1140,rare:6},
-{nombre:"👑 Rey III",prob:1130,rare:6},
-{nombre:"👑 Rey IV",prob:1120,rare:6},
-{nombre:"👑 Rey V",prob:1110,rare:6},
-
-{nombre:"👑 Rey superior",prob:1000,rare:7},
-{nombre:"💧 Rey superior de agua",prob:990,rare:7},
-{nombre:"🔥 Rey superior de fuego",prob:980,rare:7},
-{nombre:"🩸 Rey superior sangriento",prob:970,rare:7},
-{nombre:"✨ Rey superior de habilidad",prob:960,rare:7},
-{nombre:"👑 Rey superior I",prob:950,rare:7},
-{nombre:"👑 Rey superior II",prob:940,rare:7},
-{nombre:"👑 Rey superior III",prob:930,rare:7},
-{nombre:"👑 Rey superior IV",prob:920,rare:7},
-{nombre:"👑 Rey superior V",prob:910,rare:7},
-
-{nombre:"🌑 Supremacía baja",prob:100,rare:8},
-{nombre:"🌒 Supremacía regular",prob:80,rare:8},
-{nombre:"🌓 Supremacía",prob:60,rare:9},
-{nombre:"🌔 Supremacía alta",prob:40,rare:9},
-{nombre:"🌕 Supremacía superior",prob:20,rare:9},
-{nombre:"🌌 Supremacía infinita",prob:1,rare:10}
+{nombre:"💧 Pobre de agua",prob:4000,rare:1},
+{nombre:"🔥 Pobre de fuego",prob:3500,rare:1},
+{nombre:"🩸 Pobre sangriento",prob:3000,rare:1},
+{nombre:"✨ Pobre de habilidad",prob:2900,rare:1},
+{nombre:"🛒 Vendedor",prob:2800,rare:1},
+{nombre:"💧 Vendedor de agua",prob:1400,rare:1},
+{nombre:"🔥 Vendedor de fuego",prob:1050,rare:1},
+{nombre:"🩸 Vendedor sangriento",prob:700,rare:1},
+{nombre:"✨ Vendedor de habilidad",prob:525,rare:1},
+{nombre:"🙂 Común",prob:420,rare:2},
+{nombre:"💧 Común de agua",prob:280,rare:2},
+{nombre:"🔥 Común de fuego",prob:210,rare:2},
+{nombre:"🩸 Común sangriento",prob:140,rare:2},
+{nombre:"✨ Común de habilidad",prob:105,rare:2},
+{nombre:"🤖 NPC",prob:84,rare:2},
+{nombre:"💧 NPC de agua",prob:70,rare:2},
+{nombre:"🔥 NPC de fuego",prob:60,rare:2},
+{nombre:"🩸 NPC sangriento",prob:52.5,rare:2},
+{nombre:"✨ NPC de habilidad",prob:42,rare:2},
+{nombre:"🔨 Trabajador",prob:28,rare:3},
+{nombre:"💧 Trabajador de agua",prob:21,rare:3},
+{nombre:"🔥 Trabajador de fuego",prob:20,rare:3},
+{nombre:"🩸 Trabajador sangriento",prob:20.79,rare:3},
+{nombre:"✨ Trabajador de habilidad",prob:19.09,rare:3},
+{nombre:"💼 Exitoso",prob:15.56,rare:3},
+{nombre:"💧 Exitoso de agua",prob:14,rare:3},
+{nombre:"🔥 Exitoso de fuego",prob:12,rare:3},
+{nombre:"🩸 Exitoso sangriento",prob:10.5,rare:3},
+{nombre:"✨ Exitoso de habilidad",prob:9.33,rare:3},
+{nombre:"🏢 Empresario",prob:8.4,rare:4},
+{nombre:"💧 Empresario de agua",prob:7.64,rare:4},
+{nombre:"🔥 Empresario de fuego",prob:7,rare:4},
+{nombre:"🩸 Empresario sangriento",prob:6.46,rare:4},
+{nombre:"✨ Empresario de habilidad",prob:6,rare:4},
+{nombre:"👑 Jefe común",prob:5.6,rare:4},
+{nombre:"💧 Jefe común de agua",prob:5.25,rare:4},
+{nombre:"🔥 Jefe común de fuego",prob:4.67,rare:4},
+{nombre:"🩸 Jefe común sangriento",prob:4.2,rare:4},
+{nombre:"✨ Jefe común de habilidad",prob:4,rare:4},
+{nombre:"👑 Jefe",prob:3.82,rare:5},
+{nombre:"💧 Jefe de agua",prob:3.65,rare:5},
+{nombre:"🔥 Jefe de fuego",prob:3.5,rare:5},
+{nombre:"🩸 Jefe sangriento",prob:3.36,rare:5},
+{nombre:"✨ Jefe de habilidad",prob:3.23,rare:5},
+{nombre:"👑 Jefe superior",prob:3,rare:5},
+{nombre:"💧 Jefe superior de agua",prob:2.90,rare:5},
+{nombre:"🔥 Jefe superior de fuego",prob:2.8,rare:5},
+{nombre:"🩸 Jefe superior sangriento",prob:2.71,rare:5},
+{nombre:"✨ Jefe superior de habilidad",prob:2.625,rare:5},
+{nombre:"👑 Rey bajo",prob:2.55,rare:6},
+{nombre:"💧 Rey bajo de agua",prob:2.47,rare:6},
+{nombre:"🔥 Rey bajo de fuego",prob:2.4,rare:6},
+{nombre:"🩸 Rey bajo sangriento",prob:2.33,rare:6},
+{nombre:"✨ Rey bajo de habilidad",prob:2.21,rare:6},
+{nombre:"👑 Rey bajo I",prob:2.1,rare:6},
+{nombre:"👑 Rey bajo II",prob:2,rare:6},
+{nombre:"👑 Rey bajo III",prob:1.91,rare:6},
+{nombre:"👑 Rey bajo IV",prob:1.75,rare:6},
+{nombre:"👑 Rey bajo V",prob:1.62,rare:6},
+{nombre:"👑 Rey",prob:1.5,rare:6},
+{nombre:"💧 Rey de agua",prob:1.4,rare:6},
+{nombre:"🔥 Rey de fuego",prob:1.3125,rare:6},
+{nombre:"🩸 Rey sangriento",prob:1.24,rare:6},
+{nombre:"✨ Rey de habilidad",prob:1.17,rare:6},
+{nombre:"👑 Rey I",prob:1.11,rare:6},
+{nombre:"👑 Rey II",prob:1.05,rare:6},
+{nombre:"👑 Rey III",prob:0.93,rare:6},
+{nombre:"👑 Rey IV",prob:0.84,rare:6},
+{nombre:"👑 Rey V",prob:0.76,rare:6},
+{nombre:"👑 Rey superior",prob:0.7,rare:7},
+{nombre:"💧 Rey superior de agua",prob:0.68,rare:7},
+{nombre:"🔥 Rey superior de fuego",prob:0.65625,rare:7},
+{nombre:"🩸 Rey superior sangriento",prob:0.64,rare:7},
+{nombre:"✨ Rey superior de habilidad",prob:0.62,rare:7},
+{nombre:"👑 Rey superior I",prob:0.6,rare:7},
+{nombre:"👑 Rey superior II",prob:0.58,rare:7},
+{nombre:"👑 Rey superior III",prob:0.57,rare:7},
+{nombre:"👑 Rey superior IV",prob:0.55,rare:7},
+{nombre:"👑 Rey superior V",prob:0.54,rare:7},
+{nombre:"🌑 Supremacía baja",prob:0.525,rare:8},
+{nombre:"🌒 Supremacía regular",prob:0.51,rare:8},
+{nombre:"🌓 Supremacía",prob:0.49,rare:8},
+{nombre:"🌔 Supremacía alta",prob:0.47,rare:9},
+{nombre:"🌕 Supremacía superior",prob:0.46,rare:9},
+{nombre:"🌌 Supremacía infinita",prob:0.45,rare:10},
+{nombre:"⚗️ Supremacía orbital",prob:0.43,rare:10},
+{nombre:"🦖 Supremacía prehistórica",prob:0.42,rare:10}
 ];
 
+// 🎲 ROLL
 function roll(){
-let res=document.getElementById("resultado");
-let probText=document.getElementById("prob");
-res.innerText="Girando...";
-res.classList.add("anim");
+    let res=document.getElementById("resultado");
+    res.innerText="Girando...";
+    res.classList.add("anim");
 
-let spins=10;
-let interval=setInterval(()=>{
-res.innerText=poderes[Math.floor(Math.random()*poderes.length)].nombre;
-spins--;
-if(spins<=0){
-clearInterval(interval);
-finalRoll();
-}
-},100);
+    let spins=10;
+
+    let interval=setInterval(()=>{
+        res.innerText=poderes[Math.floor(Math.random()*poderes.length)].nombre;
+        spins--;
+
+        if(spins<=0){
+            clearInterval(interval);
+            finalRoll();
+        }
+    },100);
 }
 
+// 🎯 FINAL ROLL
 function finalRoll(){
-let total=poderes.reduce((s,p)=>s+p.prob,0);
-let rand=Math.random()*total;
-let res=document.getElementById("resultado");
-let probText=document.getElementById("prob");
+    let total=poderes.reduce((s,p)=>s+p.prob,0);
+    let rand=Math.random()*total;
 
-for(let p of poderes){
-if(rand<p.prob){
-res.innerText=p.nombre;
-probText.innerText="1 en "+Math.floor(total/p.prob);
-res.className="anim";
-document.getElementById("low").currentTime=0;
-document.getElementById("low").play();
-document.body.classList.add("flash");
-setTimeout(()=>document.body.classList.remove("flash"),200);
-return;
+    let res=document.getElementById("resultado");
+    let probText=document.getElementById("prob");
+
+    for(let p of poderes){
+        if(rand < (p.prob * luck)){
+            res.innerText=p.nombre;
+            probText.innerText="1 en "+Math.floor(total/p.prob);
+            res.className="anim";
+
+            document.getElementById("low").currentTime=0;
+            document.getElementById("low").play();
+
+            document.body.classList.add("flash");
+            setTimeout(()=>document.body.classList.remove("flash"),200);
+
+            rolls++;
+            if(rolls % 10 === 0){
+                luck *= 1.02;
+            }
+
+            return;
+        }
+
+        rand -= p.prob;
+    }
 }
-rand-=p.prob;
-}
-}
+
+// 📜 LISTA (ARREGLADA)
 function generarLista(){
-  let total = poderes.reduce((s,p)=>s+p.prob,0);
-  let lista = document.getElementById("lista");
+    let total=poderes.reduce((s,p)=>s+p.prob,0);
+    let lista=document.getElementById("lista");
 
-  poderes.forEach(p => {
-    let div = document.createElement("div");
-    div.style.padding = "4px";
+    poderes.forEach(p=>{
+        let div=document.createElement("div");
+        div.style.padding="4px";
 
-    let chance = Math.floor(total / p.prob);
+        let chance=Math.floor(total/p.prob);
+        div.innerText = `${p.nombre} → 1 en ${chance}`;
 
-    div.innerText = `${p.nombre} → 1 en ${chance}`;
-    lista.appendChild(div);
-  });
+        lista.appendChild(div);
+    });
 }
 
-// Ejecutar al cargar
 generarLista();
+
 </script>
 
 </body>
